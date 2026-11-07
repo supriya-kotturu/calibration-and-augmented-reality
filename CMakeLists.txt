@@ -44,4 +44,5 @@ function(add_calibar_executable target)
 	endif()
 endfunction()
 
+add_calibar_executable(make_board src/apps/make_board.cpp)
 add_calibar_executable(calibrate src/apps/calibrate.cpp)
