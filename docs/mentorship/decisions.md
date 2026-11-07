@@ -8,7 +8,7 @@ Owner: **HAND** = you write it, Claude reviews. **SNIPPET** = you type the OpenC
 | D-01 | 2026-11-06 | Calibration / AR target | — | decided: ChArUco |
 | D-02 | 2026-11-06 | Working mode + ownership | — | decided: mentorship, SNIPPET |
 | D-03 | 2026-11-06 | ChArUco board parameters (dictionary, squares, square/marker length) | you | decided: DICT_6X6_250, 9×6, square 1, marker 0.7, borderBits 1, white margin 30 px |
-| D-04 | 2026-11-06 | Camera source | you | open: exe takes index or URL |
+| D-04 | 2026-11-06 | Camera source | you | decided: phone camera streamed over Wi-Fi (URL) |
 | D-05 | 2026-11-07 | Commit the generated board PNG | you | decided: commit |
 | D-06 | 2026-11-07 | Parallel agent build (amends D-02) | you | decided: C (hybrid) |
 | D-07 | 2026-11-07 | World frame | you | decided: +z toward viewer, +y up |
@@ -56,7 +56,12 @@ Decide before Task 1: dictionary, squaresX × squaresY, squareLength, markerLeng
 
 ## D-04 — Camera source
 
-Open. `calibrate <src>`: `<src>` = device index (`0`) or file/stream URL. Calibration is only valid for the camera **and resolution** it was made with.
+`calibrate <src>`: `<src>` = device index (`0`) or file/stream URL. Calibration is only valid for the camera **and resolution** it was made with.
+
+**Options:** A. laptop webcam (device index); B. phone camera streamed to the laptop by a webcam app (URL); C. phone-recorded video files only.
+**Trade-offs:** A is the simplest and lowest-latency, but it's a different camera from the sample video. B uses the same phone as `data/samples/board.mp4`, at the cost of Wi-Fi latency, compression artefacts and dropped frames. C can't be a live demo.
+**Choice (2026-11-07):** B. The phone camera is the demo camera.
+**Consequences:** calibrate from **the stream itself**, at the exact resolution and orientation the demo uses. The phone's own recorder can crop or stabilise the image differently, so `board.mp4` is for tests and headless runs, not for producing the demo's intrinsics. Fix the streaming app's resolution and orientation, turn off its auto-rotate and stabilisation, and log them in difficulties.md.
 
 ## D-05 — Commit the generated board PNG
 
