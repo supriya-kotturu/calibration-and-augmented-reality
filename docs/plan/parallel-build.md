@@ -48,7 +48,7 @@ Everything below lives in `include/core/` + `src/core/`, builds as static lib `c
 
 **CMake:** add `calibar_core`; add targets `calibrate`, `ar`, `features` (stub `main`s for the last two); add `tests/` with GoogleTest via `FetchContent` pinned to a release tag + `enable_testing()` + `gtest_discover_tests`; add a `test` preset to `CMakePresets.json`.
 
-**Sample video:** `data/samples/board.mp4` (Git LFS, already on `main`): the board moved around, partial views included. Headless runs use it; read its resolution with `CAP_PROP_FRAME_WIDTH/HEIGHT` rather than assuming 1280×720.
+**Sample video:** `data/samples/board.mp4` (Git LFS, already on `main`): the board moved around, partial views included. Headless runs use it; read its resolution with `CAP_PROP_FRAME_WIDTH/HEIGHT` rather than assuming it (it is 1080×1920 portrait).
 
 **Tests (written in 0a, fail on stubs, must pass after 0b):**
 
@@ -58,7 +58,7 @@ Everything below lives in `include/core/` + `src/core/`, builds as static lib `c
 - `saveIntrinsics` → `loadIntrinsics` round-trips; missing file → `nullopt`.
 - `openSource("0")` takes the device path, `openSource("x.mp4")` the file path (test the parser, not the camera).
 
-**Fixtures:** `data/calib/fixture.yml` (fx = fy = 0.9 × width, principal point at centre, zero distortion, 1280×720).
+**Fixtures:** `data/calib/fixture.yml` (fx = fy = 0.9 × width, principal point at centre, zero distortion, at the sample video's 1080×1920 portrait resolution).
 
 ## Phase 1: workstreams
 
