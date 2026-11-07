@@ -12,7 +12,7 @@ Owner: **HAND** = you write it, Claude reviews. **SNIPPET** = you type the OpenC
 | D-05 | 2026-11-07 | Commit the generated board PNG | you | decided: commit |
 | D-06 | 2026-11-07 | Parallel agent build (amends D-02) | you | decided: C (hybrid) |
 | D-07 | 2026-11-07 | World frame | you | decided: +z toward viewer, +y up |
-| D-08 | 2026-11-07 | Commit screenshots and calibration captures | you | decided: commit (not git-ignored) |
+| D-08 | 2026-11-07 | Commit screenshots and calibration captures | you | decided: commit, captures via LFS |
 
 ---
 
@@ -91,3 +91,4 @@ Decide before Task 1: dictionary, squaresX × squaresY, squareLength, markerLeng
 **Options:** A. git-ignore `data/calib/images/`, `data/ar/`, `data/features/` and copy the chosen images into `report/`; B. commit them where the apps write them.
 **Trade-offs:** A keeps history small, but every README, docs or report image then has to be copied by hand and can drift from what the app actually produced. B means the docs link straight to real app output, at the cost of repo size (1080×1920 PNGs are ~1–3 MB each, and calibration writes two per save).
 **Choice (2026-11-07):** B. They're the evidence for the README, docs and report.
+**Mitigation:** the capture PNGs go through Git LFS (`.gitattributes`). The 56 KB board PNG stays a normal git file.
