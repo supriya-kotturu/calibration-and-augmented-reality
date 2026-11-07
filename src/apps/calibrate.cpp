@@ -11,25 +11,12 @@
 #include <opencv2/videoio.hpp>
 #include <string>
 
-namespace {
-
-// VideoCapture treats an int as a device and a string as a file/URL; "0" as a string would
-// be opened as a file named "0".
-bool isDeviceIndex(const std::string& s) {
-    return !s.empty() && s.find_first_not_of("0123456789") == std::string::npos;
-}
-
-}  // namespace
+#include "core/video_source.h"
 
 int main(int argc, char** argv) {
     const std::string source = argc > 1 ? argv[1] : "0";
 
-    cv::VideoCapture cap;
-    if (isDeviceIndex(source)) {
-        cap.open(std::stoi(source));
-    } else {
-        cap.open(source);
-    }
+    cv::VideoCapture cap = calibar::openSource(source);
 
     if (!cap.isOpened()) {
         std::cerr << "could not open source: " << source << "\n";
