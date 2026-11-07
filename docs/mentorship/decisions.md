@@ -10,6 +10,8 @@ Owner: **HAND** = you write it, Claude reviews. **SNIPPET** = you type the OpenC
 | D-03 | 2026-11-06 | ChArUco board parameters (dictionary, squares, square/marker length) | you | decided: DICT_6X6_250, 9×6, square 1, marker 0.7, borderBits 1, white margin 30 px |
 | D-04 | 2026-11-06 | Camera source | you | open: exe takes index or URL |
 | D-05 | 2026-11-07 | Commit the generated board PNG | you | decided: commit |
+| D-06 | 2026-11-07 | Parallel agent build (amends D-02) | you | decided: C (hybrid) |
+| D-07 | 2026-11-07 | World frame | you | decided: +z toward viewer, +y up |
 
 ---
 
@@ -61,3 +63,19 @@ Open. `calibrate <src>`: `<src>` = device index (`0`) or file/stream URL. Calibr
 **Options:** A. commit `data/board/*.png`; B. ignore it and regenerate with `make_board`.
 **Trade-offs:** A gives reviewers and the README/report a target to look at without building anything, at the cost of 56 KB and a possible mismatch with `board_spec.h`. B can never be stale, but there's nothing to show without a build.
 **Choice:** A. Mitigation: re-run `make_board` and commit the PNG in the same commit as any `board_spec.h` change.
+
+## D-06 — Parallel agent build (amends D-02)
+
+**Options**
+- A. Keep D-02 (SNIPPET): you type every OpenCV call; agents only scaffold. Slowest; you learn the most.
+- B. Full parallel: Sonnet agents build Phase 0 + WS1–WS4 ([plan](../plan/parallel-build.md)); you review and merge.
+- C. Hybrid: you write the OpenCV core in Phase 0 (`detectCharuco`, `calibrateCamera` call, `estimatePose`, `projectPoints` in `draw`); agents build the apps, tests, CMake and docs on top of it in parallel.
+
+**Trade-offs:** B is fastest but the agents write the parts the grade (and the 2-point Q&A) asks you to explain. C keeps the ~150 lines that matter for learning in your hands and still parallelises the rest; cost is that Phase 0 waits on you. A fails the "get this going" goal.
+**Choice (2026-11-07):** C. Phase 0 splits: an agent writes headers, stubs, CMake and tests (0a); you write the OpenCV implementations until the tests pass (0b). Apps and docs go to agents in parallel after 0a.
+
+## D-07 — World frame
+
+**Options:** A. OpenCV's ChArUco frame (origin top-left, +y down, so right-handed +z points into the board). B. Course convention (+x right, +y up, +z toward the viewer; next row at (0,-1,0)).
+**Trade-offs:** A needs no conversion, but "above the board" becomes −z, which is easy to get backwards while learning. B matches task.md and the lecture material, at the cost of converting OpenCV's corner coordinates in one place.
+**Choice:** B, so the code reads the same as the course while the concepts are new. The conversion lives only in `objectPointsFor`; nothing else may use the board's internal corner coordinates.
