@@ -10,8 +10,8 @@ namespace calibar {
 
 std::optional<Pose> estimatePose(const CharucoDetection& /*det*/, const Intrinsics& /*intr*/,
                                  int /*minCorners*/) {
-    // TODO(owner, D-06): cv::solvePnP(objectPointsFor(det.ids), det.corners, K, dist, rvec, tvec,
-    // false, SOLVEPNP_ITERATIVE); nullopt if too few corners or solvePnP fails.
+    // TODO(owner, D-06): estimate the board pose from `det` and `intr` (contract in pose.h).
+    // Start from cv::solvePnP and its flags.
     return std::nullopt;
 }
 

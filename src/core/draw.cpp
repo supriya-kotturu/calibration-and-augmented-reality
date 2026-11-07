@@ -10,8 +10,8 @@ namespace calibar {
 
 void drawAxes(cv::Mat& /*img*/, const Pose& /*pose*/, const Intrinsics& /*intr*/,
               float /*length*/) {
-    // TODO(owner, D-06): project origin + 3 axis tips with cv::projectPoints, then cv::line in
-    // red/green/blue (BGR).
+    // TODO(owner, D-06): project origin + 3 axis tips with cv::projectPoints (H-07), then draw
+    // them in the colours draw.h specifies.
 }
 
 void drawSegments(cv::Mat& /*img*/, const std::vector<Segment3D>& /*segments*/,

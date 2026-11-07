@@ -18,14 +18,14 @@ const cv::aruco::CharucoBoard& charucoBoard() {
 }
 
 CharucoDetection detectCharuco(const cv::Mat& /*frame*/) {
-    // TODO(owner, D-06): run cv::aruco::CharucoDetector::detectBoard on charucoBoard() and fill
-    // all four CharucoDetection vectors.
+    // TODO(owner, D-06): detect the board and fill all four CharucoDetection vectors. Start from
+    // cv::aruco::CharucoDetector (objdetect module). OpenCV 5 pitfall: hints.md H-06.
     return {};
 }
 
 std::vector<cv::Point3f> objectPointsFor(const std::vector<int>& /*ids*/) {
-    // TODO(owner, D-06): map id -> (col*L, -row*L, 0) per D-07, col = id % (kSquaresX-1),
-    // row = id / (kSquaresX-1); CharucoBoard::getChessboardCorners is +y down, don't return it.
+    // TODO(owner, D-06): map each ChArUco corner id to its 3D point in the D-07 frame (contract in
+    // charuco.h). First work out how ids are laid out on the board.
     return {};
 }
 
