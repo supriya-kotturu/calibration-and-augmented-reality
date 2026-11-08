@@ -11,7 +11,7 @@ CS5330 Project 4 by **Sai Supriya Kotturu**: calibrate a phone camera with a ChA
 | Calibration result | 960×544 stream, fx = fy = 690.3 px, RMS **0.38 px** over 7 views ([data/calib/phone.yml](data/calib/phone.yml)) |
 | Tests | 28 GoogleTest cases on a synthetic board, all passing (`ctest --preset test`) |
 | Extensions | AR on pre-captured video ([video](data/videos/ext-ar-on-recorded-video.mp4)); calibration comparison of two phone camera modes ([report](report/report.md#extensions-drafted-by-claude)) |
-| Time travel days used | TODO |
+| Time travel days used | 0 |
 
 ## Demos
 
@@ -19,11 +19,11 @@ CS5330 Project 4 by **Sai Supriya Kotturu**: calibrate a phone camera with a ChA
   <tr>
     <td align="center"><a href="data/videos/calibration-live-stream.mp4"><img src="docs/images/gifs/calibration.gif" width="360" alt="Live calibration: corner overlay, saves, RMS printout"></a><br>Calibration (Tasks 1-3)</td>
     <td align="center"><a href="data/videos/ar-live-stream.mp4"><img src="docs/images/gifs/ar.gif" width="360" alt="AR house floating above the board"></a><br>AR object (Tasks 4-6)</td>
-    <td align="center"><a href="docs/images/task7-features/"><img src="docs/images/task7-features/live-orb-match-stream.png" width="360" alt="ORB matching against a reference frame"></a><br>Features (Task 7)</td>
+    <td align="center"><a href="docs/images/task7-features/"><img src="docs/images/gifs/features.gif" width="360" alt="Harris, ORB, SIFT and ORB matching on the live stream"></a><br>Features (Task 7)</td>
   </tr>
 </table>
 
-Click a preview for the full video (or, for features, the screenshot set).
+Click a preview for the full video (for features, the screenshot set; the preview cycles Harris → ORB → SIFT → ORB matching).
 
 ## Board
 
