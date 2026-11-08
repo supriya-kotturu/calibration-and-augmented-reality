@@ -168,12 +168,27 @@ Result runMatch(const cv::Ptr<cv::ORB>& orb, const Reference& ref, const cv::Mat
 }
 
 void putHud(cv::Mat& img, const std::vector<std::string>& lines) {
-    int y = 22;
+    // A translucent panel instead of a thick black outline: putText widens each glyph's advance
+    // by the stroke thickness, so a thick outline drifts right of the thin text and ghosts.
+    constexpr double kScale = 0.55;
+    constexpr int kLineH = 22, kPad = 6;
+    int width = 0;
     for (const auto& s : lines) {
-        cv::putText(img, s, {9, y + 1}, cv::FONT_HERSHEY_SIMPLEX, 0.55, {0, 0, 0}, 3, cv::LINE_AA);
-        cv::putText(img, s, {8, y}, cv::FONT_HERSHEY_SIMPLEX, 0.55, {255, 255, 255}, 1,
+        int baseline = 0;
+        width = std::max(width,
+                         cv::getTextSize(s, cv::FONT_HERSHEY_SIMPLEX, kScale, 1, &baseline).width);
+    }
+    const cv::Rect panel =
+        cv::Rect(0, 0, width + 8 + 2 * kPad, kLineH * static_cast<int>(lines.size()) + 2 * kPad) &
+        cv::Rect(0, 0, img.cols, img.rows);
+    cv::Mat roi = img(panel);
+    roi.convertTo(roi, -1, 0.4);  // darken in place so the frame stays visible behind the text
+
+    int y = kLineH;
+    for (const auto& s : lines) {
+        cv::putText(img, s, {8, y}, cv::FONT_HERSHEY_SIMPLEX, kScale, {255, 255, 255}, 1,
                     cv::LINE_AA);
-        y += 22;
+        y += kLineH;
     }
 }
 
