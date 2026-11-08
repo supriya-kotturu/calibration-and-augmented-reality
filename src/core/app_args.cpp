@@ -12,6 +12,7 @@ namespace calibar {
 
 namespace {
 
+// Returns the partly parsed args marked invalid, so callers print usage and exit 2.
 AppArgs fail(AppArgs a, std::string msg) {
     a.ok = false;
     a.error = std::move(msg);

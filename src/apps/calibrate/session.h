@@ -44,6 +44,8 @@ struct Session {
     std::optional<Intrinsics> result;
 };
 
+// Remembers the latest frame with enough corners, so `s` still works if the board has just
+// left the view (Task 2: save the last *successful* detection).
 inline void noteDetection(Session& s, const cv::Mat& frame, const CharucoDetection& det) {
     if (static_cast<int>(det.corners.size()) < kMinCorners) return;
     s.goodFrame = frame.clone();
@@ -51,6 +53,7 @@ inline void noteDetection(Session& s, const cv::Mat& frame, const CharucoDetecti
     s.haveGood = true;
 }
 
+// Draws marker outlines and the ChArUco corners with their ids.
 inline void drawDetection(cv::Mat& img, const CharucoDetection& det) {
     if (!det.markerIds.empty()) {
         cv::aruco::drawDetectedMarkers(img, det.markerCorners, det.markerIds);
@@ -84,6 +87,8 @@ inline bool saveLast(Session& s, bool writeImages) {
     return true;
 }
 
+// task.md's starting guess: f = 1, principal point at the image centre. Without
+// CALIB_USE_INTRINSIC_GUESS, OpenCV keeps only the centre and the fx/fy ratio from it.
 inline cv::Mat initialCameraMatrix(const cv::Size& size) {
     cv::Mat k = cv::Mat::eye(3, 3, CV_64F);
     k.at<double>(0, 2) = size.width / 2.0;
@@ -91,6 +96,7 @@ inline cv::Mat initialCameraMatrix(const cv::Size& size) {
     return k;
 }
 
+// Prints K and the distortion coefficients; called before and after calibration (Task 3).
 inline void printCalib(const char* label, const cv::Mat& k, const cv::Mat& dist) {
     std::cout << label << " camera matrix:\n"
               << k << "\n"
