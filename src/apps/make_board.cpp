@@ -14,6 +14,7 @@
 
 namespace b = calibar::board;
 
+// Renders the board from board_spec.h at the tablet's native resolution (D-03, D-05).
 int main() {
     const std::string outPath = "data/board/charuco_9x6_dict6x6_250.png";
 

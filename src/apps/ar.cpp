@@ -40,6 +40,7 @@ const std::vector<Segment3D>& boardOutline() {
     return o;
 }
 
+// One stdout line per frame (Task 4): rvec/tvec in board squares, easy to grep or plot later.
 std::string poseLine(int frame, const Pose& p) {
     char buf[200];
     std::snprintf(buf, sizeof buf, "frame %d rvec [%.3f %.3f %.3f] tvec [%.3f %.3f %.3f]", frame,
@@ -47,6 +48,7 @@ std::string poseLine(int frame, const Pose& p) {
     return buf;
 }
 
+// Two-line pose overlay; text scales with the frame so it stays readable from 540p to 1080p.
 void hud(cv::Mat& img, const std::string& l1, const std::string& l2) {
     const double scale = std::max(0.5, img.cols / 1600.0);
     const int th = std::max(1, static_cast<int>(scale * 2));
@@ -60,6 +62,7 @@ void hud(cv::Mat& img, const std::string& l1, const std::string& l2) {
     }
 }
 
+// First unused shot_NNN.png, so restarting the app never overwrites earlier screenshots.
 std::string nextShotPath() {
     for (int n = 0;; ++n) {
         char name[64];
@@ -70,6 +73,8 @@ std::string nextShotPath() {
 
 }  // namespace
 
+// Tasks 4-6: load intrinsics, then per frame detect -> pose -> print -> draw axes, outline and
+// the selected object. Exits 1 if the intrinsics are missing or were made at another resolution.
 int main(int argc, char** argv) {
     AppArgs args = parseAppArgs(argc, argv);
     if (!args.ok) {

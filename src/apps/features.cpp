@@ -38,6 +38,7 @@ constexpr const char* kShotDir = "data/features";
 
 enum class Mode { Harris, Orb, Sift };
 
+// Label for the HUD and headless summary.
 const char* modeName(Mode m) {
     switch (m) {
         case Mode::Harris:
@@ -65,6 +66,8 @@ struct Result {
     cv::Mat vis;
 };
 
+// Caps the long side at kMaxSide so SIFT stays interactive and counts are comparable across
+// stream resolutions.
 cv::Mat downscale(const cv::Mat& frame) {
     const int longSide = std::max(frame.cols, frame.rows);
     if (longSide <= kMaxSide) return frame;
@@ -74,6 +77,7 @@ cv::Mat downscale(const cv::Mat& frame) {
     return out;
 }
 
+// Harris corners above `threshold` per-mille of the frame's strongest response, one per peak.
 Result runHarris(const cv::Mat& bgr, const cv::Mat& gray, const Params& p) {
     const int block = std::max(2, p.blockSize);
     const int ksize = kKsizeTable[std::clamp(p.ksizeIdx, 0, 3)];
@@ -104,6 +108,7 @@ Result runHarris(const cv::Mat& bgr, const cv::Mat& gray, const Params& p) {
     return r;
 }
 
+// ORB or SIFT keypoints drawn with size and orientation (rich keypoints).
 Result runKeypoints(const cv::Ptr<cv::Feature2D>& det, const cv::Mat& bgr, const cv::Mat& gray) {
     std::vector<cv::KeyPoint> kps;
     det->detect(gray, kps);
@@ -167,6 +172,7 @@ Result runMatch(const cv::Ptr<cv::ORB>& orb, const Reference& ref, const cv::Mat
     return r;
 }
 
+// Mode, count, FPS and parameters on a darkened panel.
 void putHud(cv::Mat& img, const std::vector<std::string>& lines) {
     // A translucent panel instead of a thick black outline: putText widens each glyph's advance
     // by the stroke thickness, so a thick outline drifts right of the thin text and ghosts.
@@ -192,10 +198,12 @@ void putHud(cv::Mat& img, const std::vector<std::string>& lines) {
     }
 }
 
+// Current detector settings as text, so screenshots record the parameters that produced them.
 std::string paramText(Mode m, const Params& p) {
     char buf[128];
     if (m == Mode::Harris)
-        std::snprintf(buf, sizeof buf, "block=%d ksize=%d k=%.3f thr=%d/1000", std::max(2, p.blockSize),
+        std::snprintf(buf, sizeof buf, "block=%d ksize=%d k=%.3f thr=%d/1000",
+                      std::max(2, p.blockSize),
                       kKsizeTable[std::clamp(p.ksizeIdx, 0, 3)], p.kx1000 / 1000.0, p.threshold);
     else if (m == Mode::Orb)
         std::snprintf(buf, sizeof buf, "nfeatures=%d fastThr=%d", p.nfeatures, p.fastThreshold);
@@ -204,6 +212,7 @@ std::string paramText(Mode m, const Params& p) {
     return buf;
 }
 
+// Shows only the active detector's sliders.
 void rebuildTrackbars(Mode m, Params& p) {
     // highgui has no remove-trackbar call, so recreate the window per mode. The Win32 backend
     // throws on destroying a window that doesn't exist yet, so skip that on the first call.
@@ -228,6 +237,7 @@ void rebuildTrackbars(Mode m, Params& p) {
     }
 }
 
+// Polls the sliders each frame (OpenCV 5 deprecates value-pointer trackbars).
 void readTrackbars(Mode m, Params& p) {
     if (m == Mode::Harris) {
         p.blockSize = cv::getTrackbarPos("blockSize", kWin);
@@ -240,6 +250,7 @@ void readTrackbars(Mode m, Params& p) {
     }
 }
 
+// No-window benchmark: runs every detector on each frame and prints average count and speed.
 int runHeadless(cv::VideoCapture& cap, int maxFrames) {
     const int limit = maxFrames > 0 ? maxFrames : 100;
     Params p;
@@ -281,6 +292,7 @@ int runHeadless(cv::VideoCapture& cap, int maxFrames) {
     return 0;
 }
 
+// Key bindings, printed at startup.
 void printHelp() {
     std::cout << "keys: h Harris | o ORB | s SIFT | r capture reference frame | m toggle ORB match "
                  "vs reference | p screenshot | q/ESC quit\n";
@@ -288,6 +300,8 @@ void printHelp() {
 
 }  // namespace
 
+// Task 7: live Harris / ORB / SIFT on any source, plus ORB matching against a captured
+// reference frame.
 int main(int argc, char** argv) {
     const calibar::AppArgs args = calibar::parseAppArgs(argc, argv);
     if (!args.ok) {

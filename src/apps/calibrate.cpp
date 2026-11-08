@@ -29,6 +29,7 @@ namespace {
 constexpr int kAutoSaveEvery = 15;
 constexpr int kAutoSaveMax = 15;
 
+// Outlined yellow text so the HUD stays readable over both the white and black squares.
 void putHud(cv::Mat& img, const std::vector<std::string>& lines) {
     int y = 40;
     for (const auto& l : lines) {
@@ -38,6 +39,7 @@ void putHud(cv::Mat& img, const std::vector<std::string>& lines) {
     }
 }
 
+// Task 1 readout: id and pixel position of the first detected corner, to sanity-check ordering.
 std::string firstCornerText(const calibar::CharucoDetection& det) {
     if (det.corners.empty()) return "first corner: -";
     std::ostringstream o;
@@ -46,6 +48,7 @@ std::string firstCornerText(const calibar::CharucoDetection& det) {
     return o.str();
 }
 
+// `w` key: refuses until a calibration exists, so a stale or empty file is never written.
 void writeResult(const calibar::calib::Session& s, const std::string& path) {
     if (!s.result) {
         std::cerr << "nothing to write: calibrate first (c)\n";
@@ -55,6 +58,8 @@ void writeResult(const calibar::calib::Session& s, const std::string& path) {
     std::cout << "wrote intrinsics to " << path << "\n";
 }
 
+// No-window run for checks without a camera: auto-saves every kAutoSaveEvery-th detection
+// (spreading views across the clip), calibrates at the end, writes only if --intrinsics is set.
 int runHeadless(cv::VideoCapture& cap, const calibar::AppArgs& args) {
     calibar::calib::Session s;
     const int stride = (args.maxFrames > 0 && args.maxFrames <= 100) ? 1 : 10;
@@ -86,6 +91,7 @@ int runHeadless(cv::VideoCapture& cap, const calibar::AppArgs& args) {
 
 }  // namespace
 
+// Tasks 1-3: live detection overlay; s saves a view, c calibrates (>= 5 views), w writes YAML.
 int main(int argc, char** argv) {
     const calibar::AppArgs args = calibar::parseAppArgs(argc, argv);
     if (!args.ok) {
