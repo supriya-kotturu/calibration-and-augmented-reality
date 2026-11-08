@@ -118,9 +118,33 @@ All screenshots: [docs/images/task7-features/](../docs/images/task7-features/).
 
 - **TODO (me)**, or keep: more calibration views with `CALIB_FIX_K3`; feature-based AR with RANSAC; shaded objects with OpenGL.
 
-## Extensions
+## Extensions *(drafted by Claude)*
 
-None submitted.
+### 1. AR on pre-captured video
+
+`ar` takes a file as easily as a stream, so the same pipeline inserts the house into the phone's own recording (`data/samples/board.mp4`, 1080×1920, 28 s), using a calibration made from that recording (`sample_video.yml`). The pose was found in 738 of 838 frames; the misses are the frames where the board is too steep or partly out of view.
+
+<img src="../docs/images/extensions/ar-on-recorded-video-frame500.png" width="360" alt="House rendered onto the recorded video">
+
+Video: [ext-ar-on-recorded-video.mp4](../data/videos/ext-ar-on-recorded-video.mp4).
+
+### 2. Comparing two camera modes of the same phone
+
+The same phone camera, calibrated in two modes:
+
+| | IP Webcam stream (live demo) | Phone camera app recording |
+| --- | --- | --- |
+| Resolution | 960×544, landscape | 1080×1920, portrait |
+| Views | 7, chosen by hand | 15, auto-picked headless (every 15th detection) |
+| fx = fy (px) | 690.3 | 1748.1 |
+| Principal point vs centre | (477.3, 272.7) vs (480, 272) | (585.7, 878.2) vs (540, 960) |
+| k1, k2, k3 | 0.174, −1.100, 1.746 | 0.043, −0.755, 2.211 |
+| RMS | **0.38 px** | 0.62 px |
+| Field of view, long side | 2·atan(480 / 690.3) ≈ **69.6°** | 2·atan(960 / 1748.1) ≈ **57.5°** |
+
+- **Focal length doesn't just scale with resolution.** Going from 960 to 1920 px on the long side should double fx (690 → 1380), but the recording gives 1748. The recorder's field of view is about 12° narrower, consistent with the camera app cropping the sensor for video (e.g. stabilisation).
+- **Why this matters (D-04):** a calibration from the camera app's recordings would be wrong for the live stream even at the same pixel count. The live demo had to be calibrated from the stream itself.
+- **Hand-picked views beat auto-picked ones.** The recording's principal point is 82 px off centre vertically despite more views. Its auto-picked frames came from one continuous sweep and are less varied than the 7 deliberate views (tilted both ways, close-ups at the frame edge).
 
 ## Reflection
 

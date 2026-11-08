@@ -10,6 +10,7 @@ CS5330 Project 4 by **Sai Supriya Kotturu**: calibrate a phone camera with a ChA
 | Demo videos | [Calibration](data/videos/calibration-live-stream.mp4) · [AR house](data/videos/ar-live-stream.mp4) · [AR object switching](data/videos/ar-object-switching-live-stream.mp4) (Git LFS) |
 | Calibration result | 960×544 stream, fx = fy = 690.3 px, RMS **0.38 px** over 7 views ([data/calib/phone.yml](data/calib/phone.yml)) |
 | Tests | 28 GoogleTest cases on a synthetic board, all passing (`ctest --preset test`) |
+| Extensions | AR on pre-captured video ([video](data/videos/ext-ar-on-recorded-video.mp4)); calibration comparison of two phone camera modes ([report](report/report.md#extensions-drafted-by-claude)) |
 | Time travel days used | TODO |
 
 ## Demos
