@@ -2,9 +2,8 @@
 
 Deeper companion to the overview in [README.md](README.md#architecture) ([source](docs/architecture/overview.mmd)). Decisions live in [docs/mentorship/decisions.md](docs/mentorship/decisions.md); the build split is in [docs/plan/parallel-build.md](docs/plan/parallel-build.md).
 
-> Status: the core contracts are frozen. Where an app is still a stub or work in progress, the diagram shows the **intended** behaviour from the plan and is marked WIP. Re-sync against the merged apps before submitting.
 
-## 1. calibrate: data flow (Tasks 1-3) (WIP)
+## 1. calibrate: data flow (Tasks 1-3)
 
 Why a state machine: the user presses `s` when the board may not be visible, so the app keeps the **last successful** detection and saves that, not the current frame.
 
@@ -36,7 +35,7 @@ flowchart TD
 
 ChArUco is not a checkerboard: each frame sees a different subset of corners, so `point_list[i]` is built from that frame's `ids`, never one fixed vector. `point_list[i].size() == corner_list[i].size()` holds per frame.
 
-## 2. ar: per-frame pipeline (Tasks 4-6) (WIP)
+## 2. ar: per-frame pipeline (Tasks 4-6)
 
 ```mermaid
 flowchart LR
@@ -101,7 +100,7 @@ flowchart LR
   O -- "+z (out of the board)" --> Z
 ```
 
-Sketch of the axes (axis colours are decided by the AR app, WIP):
+Sketch of the axes (`drawAxes`: X red, Y green, Z blue):
 
 ```
         +y
@@ -134,7 +133,7 @@ Frozen headers; read them rather than a copy here.
 - `objectPointsFor` is checked against the D-07 frame (z = 0, unit spacing, `(0,-1,0)` below the origin), and +z is checked to face the camera.
 - `saveIntrinsics` / `loadIntrinsics` round-trip; a missing file gives `nullopt`.
 - `openSource` parsing and `app_args` are tested without opening a camera.
-- Per D-06 the OpenCV-heavy core (`charuco`, `intrinsics_io`, `pose`, `draw`) is hand-written by the owner against these tests: the tests were written first and fail on the stubs by design. `video_source` and `app_args` are plain C++ and were written alongside the scaffold.
+- Per D-06 the OpenCV-heavy core (`charuco`, `intrinsics_io`, `pose`) is hand-written by the owner against these tests (`draw` was moved to Claude by a D-06 amendment): the tests were written first and fail on the stubs by design. `video_source` and `app_args` are plain C++ and were written alongside the scaffold.
 - Apps are verified headless on `data/samples/board.mp4`. Live camera behaviour (stream latency, key handling, overlay stability) can only be checked by hand.
 
 ## 7. Decisions
