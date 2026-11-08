@@ -67,23 +67,88 @@ Four executables share one static library, `calibar_core`: `make_board` renders 
 
 ## Build and run
 
-Requires Visual Studio 2026 and the prebuilt OpenCV 5.0 at `C:/opencv` (or set `OpenCV_DIR`). Executables land in `out/`; run them from the repo root. Use the Release build for live video; Debug is several times slower.
+### Requirements
+
+- Windows with Visual Studio 2026 (MSVC).
+- The prebuilt OpenCV 5.0 at `C:/opencv`, or set `OpenCV_DIR` to wherever yours is.
+- Git LFS, so the sample video, demo videos and images download: `git lfs install` before cloning.
+- For live runs: an Android phone with the **IP Webcam** app, on the same Wi-Fi as the laptop.
+
+Executables land in `out/`. Run them from the repo root, because data paths are relative to it.
+
+### Step 0: Build and test
 
 ```sh
-cmake --preset msvc
-cmake --build --preset release
-ctest --preset test                        # 28 tests
-
-./out/make_board.exe                       # writes data/board/charuco_9x6_dict6x6_250.png
-./out/calibrate.exe http://<phone-ip>:8080/video --intrinsics data/calib/phone.yml
-./out/ar.exe http://<phone-ip>:8080/video --intrinsics data/calib/phone.yml
-./out/features.exe http://<phone-ip>:8080/video
-
-# No camera: run on the sample recording with its own calibration
-./out/ar.exe data/samples/board.mp4 --intrinsics data/calib/sample_video.yml --headless
+cmake --preset msvc                  # configure (downloads GoogleTest on first run)
+cmake --build --preset release       # use Release for live video; Debug is several times slower
+ctest --preset test                  # 28 tests on a synthetic board, all should pass
 ```
 
-All apps take `<source> [--intrinsics path] [--headless] [--max-frames N]`, where `<source>` is a camera index, a video file or a stream URL ([include/core/app_args.h](include/core/app_args.h)).
+### Step 1: Show the board
+
+```sh
+./out/make_board.exe                 # writes data/board/charuco_9x6_dict6x6_250.png
+```
+
+Open the PNG full-screen on a tablet at its native resolution (or print it and tape it flat). The committed copy is already rendered for a 2304×1440 screen.
+
+### Step 2: Start the phone stream
+
+In IP Webcam:
+1. Under **Video preferences**, set the resolution. I used 960×540; the stream arrives as 960×544.
+2. Lock the orientation to landscape, and turn off stabilisation and zoom.
+3. Tap **Start server** and note the IP address it shows.
+
+The stream URL is `http://<phone-ip>:8080/video`. Open it in a browser first to check it plays.
+
+### Step 3: Calibrate (Tasks 1–3)
+
+```sh
+./out/calibrate.exe http://<phone-ip>:8080/video --intrinsics data/calib/phone.yml
+```
+
+1. Move the phone around the board. Detected corners and their IDs are drawn live.
+2. Press `s` to save a view. Save 8–15 views: straight on, tilted both ways, and close up with the board running off the frame edge.
+3. Press `c` to calibrate (it needs at least 5 views). It prints the camera matrix and distortion before and after, and the RMS error; aim for under 1 px.
+4. Press `w` to write `data/calib/phone.yml`, then `q` to quit.
+
+Each saved view is also written to `data/calib/images/`, both raw and with the corners drawn on.
+
+### Step 4: Augmented reality (Tasks 4–6)
+
+```sh
+./out/ar.exe http://<phone-ip>:8080/video --intrinsics data/calib/phone.yml
+```
+
+- The board pose (`rvec`, `tvec`) prints every frame and shows in the corner.
+- The axes and board outline are drawn on the board, with the house floating above it.
+- Keys: `2` house, `1` debug cube, `a` toggle axes, `p` screenshot to `data/ar/`, `q` quit.
+- Keep the IP Webcam resolution exactly as it was during calibration. If it differs, `ar` refuses to start and prints a mismatch message.
+
+### Step 5: Robust features (Task 7)
+
+```sh
+./out/features.exe http://<phone-ip>:8080/video
+```
+
+- Press `h`, `o` or `s` to switch between Harris, ORB and SIFT. Each has threshold sliders.
+- For matching, press `o`, then `r` to capture a reference frame. Move the phone, then press `m` to toggle matching against it.
+- `p` saves a screenshot to `data/features/`.
+
+### Without a camera
+
+Every app also takes a video file. The repo includes a recording of the board with its own calibration:
+
+```sh
+./out/ar.exe data/samples/board.mp4 --intrinsics data/calib/sample_video.yml               # with a window
+./out/ar.exe data/samples/board.mp4 --intrinsics data/calib/sample_video.yml --headless    # prints poses only
+./out/calibrate.exe data/samples/board.mp4 --headless                                      # auto-picks 15 views
+./out/features.exe data/samples/board.mp4 --headless --max-frames 100                      # detector benchmark
+```
+
+### Reference
+
+All apps take `<source> [--intrinsics path] [--headless] [--max-frames N]`. `<source>` is a camera index (`0`), a video file or a stream URL ([include/core/app_args.h](include/core/app_args.h)).
 
 | App | Keys |
 | --- | --- |
