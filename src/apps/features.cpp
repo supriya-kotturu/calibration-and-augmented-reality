@@ -50,7 +50,7 @@ const char* modeName(Mode m) {
     return "?";
 }
 
-// Trackbar-backed state: createTrackbar writes straight into these ints.
+// Detector parameters; in live mode readTrackbars refreshes them from the sliders each frame.
 struct Params {
     int blockSize = 2;       // Harris neighbourhood; min 2
     int ksizeIdx = 1;        // index into kKsizeTable -> 3
@@ -190,17 +190,38 @@ std::string paramText(Mode m, const Params& p) {
 }
 
 void rebuildTrackbars(Mode m, Params& p) {
-    // highgui has no remove-trackbar call, so recreate the window per mode.
-    cv::destroyWindow(kWin);
+    // highgui has no remove-trackbar call, so recreate the window per mode. The Win32 backend
+    // throws on destroying a window that doesn't exist yet, so skip that on the first call.
+    static bool windowExists = false;
+    if (windowExists) cv::destroyWindow(kWin);
     cv::namedWindow(kWin, cv::WINDOW_AUTOSIZE);
+    windowExists = true;
+    // OpenCV 5 deprecates the value-pointer form of createTrackbar, so create each slider with
+    // nullptr, seed it from Params, and poll it in readTrackbars.
+    auto bar = [](const char* name, int value, int max) {
+        cv::createTrackbar(name, kWin, nullptr, max);
+        cv::setTrackbarPos(name, kWin, value);
+    };
     if (m == Mode::Harris) {
-        cv::createTrackbar("blockSize", kWin, &p.blockSize, 15);
-        cv::createTrackbar("ksize 1/3/5/7", kWin, &p.ksizeIdx, 3);
-        cv::createTrackbar("k x1000", kWin, &p.kx1000, 100);
-        cv::createTrackbar("threshold (permille of max)", kWin, &p.threshold, 200);
+        bar("blockSize", p.blockSize, 15);
+        bar("ksize 1/3/5/7", p.ksizeIdx, 3);
+        bar("k x1000", p.kx1000, 100);
+        bar("threshold (permille of max)", p.threshold, 200);
     } else if (m == Mode::Orb) {
-        cv::createTrackbar("nfeatures", kWin, &p.nfeatures, 5000);
-        cv::createTrackbar("fastThreshold", kWin, &p.fastThreshold, 100);
+        bar("nfeatures", p.nfeatures, 5000);
+        bar("fastThreshold", p.fastThreshold, 100);
+    }
+}
+
+void readTrackbars(Mode m, Params& p) {
+    if (m == Mode::Harris) {
+        p.blockSize = cv::getTrackbarPos("blockSize", kWin);
+        p.ksizeIdx = cv::getTrackbarPos("ksize 1/3/5/7", kWin);
+        p.kx1000 = cv::getTrackbarPos("k x1000", kWin);
+        p.threshold = cv::getTrackbarPos("threshold (permille of max)", kWin);
+    } else if (m == Mode::Orb) {
+        p.nfeatures = cv::getTrackbarPos("nfeatures", kWin);
+        p.fastThreshold = cv::getTrackbarPos("fastThreshold", kWin);
     }
 }
 
@@ -292,6 +313,7 @@ int main(int argc, char** argv) {
     auto last = Clock::now();
     while (cap.read(frame)) {
         if (args.maxFrames > 0 && framesRead++ >= args.maxFrames) break;
+        readTrackbars(mode, p);
         const cv::Mat bgr = downscale(frame);
         cv::Mat gray;
         cv::cvtColor(bgr, gray, cv::COLOR_BGR2GRAY);
@@ -345,5 +367,6 @@ int main(int argc, char** argv) {
             std::cout << "saved " << name << "\n";
         }
     }
+    cv::destroyAllWindows();
     return 0;
 }
