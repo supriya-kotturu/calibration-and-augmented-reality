@@ -2,9 +2,20 @@
   // IntelliSense takes include paths (OpenCV, include/) from the CMake targets instead of guessing.
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
   "cmake.useCMakePresets": "always",
+  // Fallback when CMake Tools hasn't handed IntelliSense a configuration yet (e.g. after a
+  // command-line reconfigure): without it every OpenCV include shows a red squiggle.
+  "C_Cpp.default.includePath": ["${workspaceFolder}/include", "C:/opencv/build/include"],
+  "C_Cpp.default.cppStandard": "c++17",
   "cSpell.words": [
     "aruco",
+    "calibar",
     "Charuco",
-    "imwrite"
+    "Coeffs",
+    "imwrite",
+    "Kotturu",
+    "rvec",
+    "SOLVEPNP",
+    "Supriya",
+    "tvec"
   ],
 }

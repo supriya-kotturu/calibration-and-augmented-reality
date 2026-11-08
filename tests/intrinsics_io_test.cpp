@@ -23,7 +23,8 @@ fs::path tempPath(const std::string& name) {
 Intrinsics sample() {
     Intrinsics in;
     in.cameraMatrix = cv::Mat(cv::Matx33d(1000.5, 0, 639.25, 0, 998.75, 360.5, 0, 0, 1)).clone();
-    in.distCoeffs = cv::Mat(std::vector<double>{0.1, -0.25, 0.001, -0.002, 0.05});
+    // copyData = true: the vector is a temporary, and a non-copying Mat would dangle past this line.
+    in.distCoeffs = cv::Mat(std::vector<double>{0.1, -0.25, 0.001, -0.002, 0.05}, true);
     in.imageSize = {1280, 720};
     in.rmsPx = 0.4375;
     in.numFrames = 12;

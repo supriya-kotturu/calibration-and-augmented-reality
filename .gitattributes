@@ -1,3 +1,8 @@
 # Shell scripts run inside Linux containers; CRLF breaks bash.
 *.sh text eol=lf
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+# App captures are committed as docs/report evidence (D-08); LFS keeps clones small.
+data/calib/images/*.png filter=lfs diff=lfs merge=lfs -text
+data/ar/*.png filter=lfs diff=lfs merge=lfs -text
+data/features/*.png filter=lfs diff=lfs merge=lfs -text
+docs/images/**/*.png filter=lfs diff=lfs merge=lfs -text

@@ -33,6 +33,8 @@ endif()
 add_custom_target(copy_opencv_dlls)
 if(WIN32 AND OPENCV_RUNTIME_DLLS)
 	add_custom_command(TARGET copy_opencv_dlls POST_BUILD
+		# out/ is git-ignored, so a fresh clone or worktree doesn't have it yet.
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENCV_RUNTIME_DLLS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
 		COMMAND_EXPAND_LISTS
 	)

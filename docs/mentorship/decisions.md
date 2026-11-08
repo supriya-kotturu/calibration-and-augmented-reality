@@ -10,8 +10,9 @@ Owner: **HAND** = you write it, Claude reviews. **SNIPPET** = you type the OpenC
 | D-03 | 2026-11-06 | ChArUco board parameters (dictionary, squares, square/marker length) | you | decided: DICT_6X6_250, 9×6, square 1, marker 0.7, borderBits 1, white margin 30 px |
 | D-04 | 2026-11-06 | Camera source | you | decided: phone camera streamed over Wi-Fi (URL) |
 | D-05 | 2026-11-07 | Commit the generated board PNG | you | decided: commit |
-| D-06 | 2026-11-07 | Parallel agent build (amends D-02) | you | decided: C (hybrid) |
+| D-06 | 2026-11-07 | Parallel agent build (amends D-02) | you | decided: C (hybrid); draw.cpp → AGENT (2026-11-07 amendment) |
 | D-07 | 2026-11-07 | World frame | you | decided: +z toward viewer, +y up |
+| D-08 | 2026-11-07 | Commit screenshots and calibration captures | you | decided: commit, captures via LFS |
 
 ---
 
@@ -77,6 +78,8 @@ Decide before Task 1: dictionary, squaresX × squaresY, squareLength, markerLeng
 - C. Hybrid: you write the OpenCV core in Phase 0 (`detectCharuco`, `calibrateCamera` call, `estimatePose`, `projectPoints` in `draw`); agents build the apps, tests, CMake and docs on top of it in parallel.
 
 **Trade-offs:** B is fastest but the agents write the parts the grade (and the 2-point Q&A) asks you to explain. C keeps the ~150 lines that matter for learning in your hands and still parallelises the rest; cost is that Phase 0 waits on you. A fails the "get this going" goal.
+**Amendment (2026-11-07, 20:41):** `draw.cpp` switched to AGENT (Claude wrote it) to finish the project tonight. You hand-wrote `charuco.cpp`, `intrinsics_io.cpp` and `pose.cpp`; the report's acknowledgements must say so.
+
 **Choice (2026-11-07):** C. Phase 0 splits: an agent writes headers, stubs, CMake and tests (0a); you write the OpenCV implementations until the tests pass (0b). Apps and docs go to agents in parallel after 0a.
 
 ## D-07 — World frame
@@ -84,3 +87,10 @@ Decide before Task 1: dictionary, squaresX × squaresY, squareLength, markerLeng
 **Options:** A. OpenCV's ChArUco frame (origin top-left, +y down, so right-handed +z points into the board). B. Course convention (+x right, +y up, +z toward the viewer; next row at (0,-1,0)).
 **Trade-offs:** A needs no conversion, but "above the board" becomes −z, which is easy to get backwards while learning. B matches task.md and the lecture material, at the cost of converting OpenCV's corner coordinates in one place.
 **Choice:** B, so the code reads the same as the course while the concepts are new. The conversion lives only in `objectPointsFor`; nothing else may use the board's internal corner coordinates.
+
+## D-08 — Commit screenshots and calibration captures
+
+**Options:** A. git-ignore `data/calib/images/`, `data/ar/`, `data/features/` and copy the chosen images into `report/`; B. commit them where the apps write them.
+**Trade-offs:** A keeps history small, but every README, docs or report image then has to be copied by hand and can drift from what the app actually produced. B means the docs link straight to real app output, at the cost of repo size (1080×1920 PNGs are ~1–3 MB each, and calibration writes two per save).
+**Choice (2026-11-07):** B. They're the evidence for the README, docs and report.
+**Mitigation:** the capture PNGs go through Git LFS (`.gitattributes`). The 56 KB board PNG stays a normal git file.
