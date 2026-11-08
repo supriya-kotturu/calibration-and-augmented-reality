@@ -26,7 +26,10 @@ Built by **Supriya Kotturu** for Northeastern CS5330 (Project 4, spec in [task.m
 <table>
   <tr>
     <td align="center"><a href="data/videos/calibration-live-stream.mp4"><img src="docs/images/gifs/calibration.gif" width="360" alt="Live calibration: corner overlay, saves, RMS printout"></a><br>Calibration (Tasks 1-3)</td>
-    <td align="center"><a href="data/videos/ar-live-stream.mp4"><img src="docs/images/gifs/ar.gif" width="360" alt="AR house floating above the board"></a><br>AR object (Tasks 4-6)</td>
+    <td align="center"><a href="data/videos/ar-live-stream.mp4"><img src="docs/images/gifs/ar.gif" width="320" alt="AR house floating above the board"></a><br>AR house with axes (Tasks 4-6)</td>
+  </tr>
+  <tr>
+    <td align="center"><a href="data/videos/ar-object-switching-live-stream.mp4"><img src="docs/images/gifs/ar-object-switching.gif" width="320" alt="Switching between the debug cube and the house"></a><br>Switching objects: debug cube ↔ house (Task 6)</td>
     <td align="center"><a href="docs/images/task7-features/"><img src="docs/images/gifs/features.gif" width="360" alt="Harris, ORB, SIFT and ORB matching on the live stream"></a><br>Features (Task 7)</td>
   </tr>
 </table>
