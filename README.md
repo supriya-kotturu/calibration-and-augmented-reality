@@ -44,7 +44,7 @@ Click a preview for the full video (for features, the screenshot set; the previe
 
 ## Architecture
 
-<img src="docs/architecture/overview.png" alt="Architecture overview" width="100%">
+<p align="center"><a href="docs/architecture/overview.png"><img src="docs/architecture/overview.png" alt="Architecture overview" width="520"></a><br><sub>Click to open full size.</sub></p>
 
 Source: [docs/architecture/overview.mmd](docs/architecture/overview.mmd) (Mermaid). Deeper diagrams (calibrate data flow, AR per-frame pipeline, core dependencies, world frame), contracts and test strategy: [ARCHITECTURE.md](ARCHITECTURE.md).
 
