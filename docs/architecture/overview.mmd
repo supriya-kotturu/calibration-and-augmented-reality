@@ -1,96 +1,80 @@
-%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#f7f7f7", "primaryTextColor": "#1b2a3a", "primaryBorderColor": "#b0b0b0", "lineColor": "#5a6472", "textColor": "#1b2a3a", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#b0b0b0", "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"}}}%%
-flowchart LR
-  classDef app fill:#cfe8ff,stroke:#6a9fd1,color:#1b2a3a
-  classDef core fill:#d8f3dc,stroke:#74b98a,color:#1b2a3a
-  classDef data fill:#fff3bf,stroke:#d4b84a,color:#1b2a3a
-  classDef ext fill:#ffd8d8,stroke:#d08a8a,color:#1b2a3a
-  classDef cv fill:#e6d9f7,stroke:#9b82c9,color:#1b2a3a
-  classDef task fill:#ffffff,stroke:#8a8a8a,color:#1b2a3a
-  classDef box fill:#f7f7f7,stroke:#b0b0b0,color:#333333
+%%{init: {"theme": "base", "flowchart": {"nodeSpacing": 45, "rankSpacing": 65, "padding": 16, "curve": "basis"}, "themeVariables": {"fontSize": "18px", "background": "#ffffff", "primaryColor": "#f7f7f7", "primaryTextColor": "#1b2a3a", "primaryBorderColor": "#b0b0b0", "lineColor": "#5a6472", "textColor": "#1b2a3a", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#b0b0b0", "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"}}}%%
+flowchart TB
+  classDef app fill:#cfe8ff,stroke:#6a9fd1,stroke-width:2px,color:#1b2a3a
+  classDef task fill:#eef6ff,stroke:#6a9fd1,stroke-width:1.5px,color:#1b2a3a
+  classDef core fill:#d8f3dc,stroke:#74b98a,stroke-width:2px,color:#1b2a3a
+  classDef data fill:#fff3bf,stroke:#d4b84a,stroke-width:2px,color:#1b2a3a
+  classDef ext fill:#ffd8d8,stroke:#d08a8a,stroke-width:2px,color:#1b2a3a
+  classDef cv fill:#e6d9f7,stroke:#9b82c9,stroke-width:2px,color:#1b2a3a
+  classDef box fill:#fbfbfb,stroke:#9aa3ad,stroke-width:1.5px,stroke-dasharray:6 4,color:#1b2a3a
+  classDef exe fill:#f4f9ff,stroke:#6a9fd1,stroke-width:1.5px,color:#1b2a3a
 
-  subgraph PHONE["Phone (streaming app)"]
-    CAM["Phone camera<br/>fixed resolution, no stabilisation"]:::ext
+  subgraph WORLD["Physical setup"]
+    direction LR
+    TAB("Tablet<br/>shows the ChArUco board"):::ext
+    PHONE("Phone + IP Webcam<br/>960×544 MJPEG stream"):::ext
+    TAB -- "filmed by" --> PHONE
   end
 
-    subgraph MB["make_board.exe"]
-      MBMAIN["make_board main"]:::app
-    end
+  subgraph APPS["Executables (one per job)"]
+    direction LR
     subgraph CAL["calibrate.exe"]
-      CALMAIN["calibrate main<br/>keys s / c / w (WIP)"]:::app
-      T1["Task 1: detect + draw corners"]:::task
-      T2["Task 2: select frames (s)"]:::task
-      T3["Task 3: calibrateCamera (c), write (w)"]:::task
-      CALMAIN --> T1 --> T2 --> T3
+      direction TB
+      T1("Task 1<br/>detect + draw corners"):::task
+      T2("Task 2<br/>save views (s)"):::task
+      T3("Task 3<br/>calibrateCamera (c), write (w)"):::task
+      T1 --> T2 --> T3
     end
     subgraph AR["ar.exe"]
-      ARMAIN["ar main (WIP)"]:::app
-      T4["Task 4: pose R, t per frame"]:::task
-      T5["Task 5: axes + projected corners"]:::task
-      T6["Task 6: virtual line object"]:::task
-      OBJ["objects.h<br/>vector of Segment3D"]:::app
-      ARMAIN --> T4 --> T5 --> T6
-      OBJ -- "Segment3D list" --> T6
+      direction TB
+      T4("Task 4<br/>pose rvec, tvec"):::task
+      T5("Task 5<br/>axes + board outline"):::task
+      T6("Task 6<br/>house / cube (objects.h)"):::task
+      T4 --> T5 --> T6
     end
     subgraph FEAT["features.exe"]
-      FMAIN["features main (WIP)"]:::app
-      T7["Task 7: Harris + ORB features"]:::task
-      FMAIN --> T7
+      direction TB
+      T7("Task 7<br/>Harris, ORB, SIFT, matching"):::task
     end
-
-  subgraph CORE["calibar_core (static lib, linked into calibrate / ar / features)"]
-    direction LR
-    VS["video_source"]:::core
-    CH["charuco<br/>detectCharuco, objectPointsFor"]:::core
-    IO["intrinsics_io<br/>save / load"]:::core
-    PS["pose<br/>estimatePose"]:::core
-    DR["draw<br/>drawAxes, drawSegments"]:::core
-    AA["app_args"]:::core
-    CH --> PS
-    PS --> DR
+    MB("make_board.exe"):::app
   end
 
-  subgraph OCV["OpenCV 5.0"]
+  subgraph CORE["calibar_core (static library)"]
     direction LR
-    OVIDEO["videoio"]:::cv
-    OOBJ["objdetect: CharucoDetector"]:::cv
-    OCAL["calib: calibrateCamera, solvePnP, projectPoints"]:::cv
-    OFS["core: FileStorage"]:::cv
-    OFEAT["imgproc + features2d: cornerHarris, ORB"]:::cv
+    VS("video_source<br/>index / file / URL"):::core
+    CH("charuco<br/>detect + id → 3D point"):::core
+    PS("pose<br/>solvePnP"):::core
+    DR("draw<br/>projectPoints"):::core
+    IO("intrinsics_io<br/>YAML + resolution"):::core
   end
 
-  subgraph FS["Filesystem"]
+  subgraph FILES["Files"]
     direction LR
-    BOARD[("data/board/*.png")]:::data
-    VID[("data/samples/board.mp4")]:::data
-    FIX[("data/calib/fixture.yml")]:::data
-    YML[("data/calib/*.yml")]:::data
-    IMGS[("data/calib/images/")]:::data
+    BOARD[("board PNG")]:::data
+    YML[("phone.yml<br/>intrinsics")]:::data
+    SAMPLE[("board.mp4<br/>sample recording")]:::data
   end
 
-  CAM -- "frames over Wi-Fi URL" --> VS
-  VID -- "headless frames" --> VS
-  MBMAIN -- "board image" --> BOARD
-  BOARD -. "shown on tablet / printed, filmed by phone" .-> CAM
+  OCV{{"OpenCV 5.0<br/>objdetect · calib · geometry · features"}}:::cv
 
-  VS -- "frames" --> CALMAIN
-  VS -- "frames" --> ARMAIN
-  VS -- "frames" --> FMAIN
-  CH -- "corners + ids" --> T1
-  T2 -- "calibration frames" --> IMGS
-  T3 -- "Intrinsics" --> IO
-  IO -- "intrinsics YAML" --> YML
-  YML -- "intrinsics YAML" --> IO
-  FIX -. "approx. intrinsics until real calibration" .-> IO
-  IO -- "Intrinsics" --> T4
-  PS -- "Pose (rvec, tvec)" --> T4
-  DR -- "projected overlay" --> T5
+  PHONE -- "frames over Wi-Fi" --> VS
+  SAMPLE -- "frames (headless)" --> VS
+  MB -- "renders" --> BOARD
+  BOARD -. "displayed on" .-> TAB
 
-  VS --> OVIDEO
-  CH --> OOBJ
-  IO --> OFS
-  PS --> OCAL
-  DR --> OCAL
-  T3 -- "calibrateCamera" --> OCAL
-  T7 -- "features" --> OFEAT
+  VS -- "frames" --> CAL
+  VS -- "frames" --> AR
+  VS -- "frames" --> FEAT
+  CH -- "corners + ids" --> CAL
+  CH -- "corners + ids" --> PS
+  CAL -- "writes" --> IO
+  IO <-- "save / load" --> YML
+  IO -- "intrinsics" --> PS
+  PS -- "pose" --> AR
+  DR -- "overlay" --> AR
 
-  class CORE,OCV,FS,PHONE,MB,CAL,AR,FEAT box
+  CORE -- "uses" --> OCV
+  FEAT -- "uses" --> OCV
+
+  class WORLD,APPS,CORE,FILES box
+  class CAL,AR,FEAT exe
