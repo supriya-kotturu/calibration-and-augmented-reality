@@ -361,8 +361,11 @@ int main(int argc, char** argv) {
         }
         if (key == 'p' && !lastShown.empty()) {
             std::filesystem::create_directories(kShotDir);
+            // The counter restarts every run; skip names already on disk so earlier shots survive.
             char name[64];
-            std::snprintf(name, sizeof name, "%s/shot_%03d.png", kShotDir, shot++);
+            do {
+                std::snprintf(name, sizeof name, "%s/shot_%03d.png", kShotDir, shot++);
+            } while (std::filesystem::exists(name));
             cv::imwrite(name, lastShown);
             std::cout << "saved " << name << "\n";
         }
