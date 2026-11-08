@@ -6,3 +6,4 @@ data/calib/images/*.png filter=lfs diff=lfs merge=lfs -text
 data/ar/*.png filter=lfs diff=lfs merge=lfs -text
 data/features/*.png filter=lfs diff=lfs merge=lfs -text
 docs/images/**/*.png filter=lfs diff=lfs merge=lfs -text
+REPORT.pdf filter=lfs diff=lfs merge=lfs -text
