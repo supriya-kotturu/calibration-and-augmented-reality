@@ -21,4 +21,10 @@ target_link_libraries(calibar_tests PRIVATE calibar_core GTest::gtest_main)
 add_dependencies(calibar_tests copy_opencv_dlls)
 
 # Repo root as cwd so tests can open data/ files with relative paths.
-gtest_discover_tests(calibar_tests WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
+# Discover at ctest time, not as a post-build step: the first load of the debug OpenCV DLL can
+# exceed the default 5 s discovery timeout and fail an otherwise good build.
+gtest_discover_tests(calibar_tests
+	WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+	DISCOVERY_MODE PRE_TEST
+	DISCOVERY_TIMEOUT 60
+)
