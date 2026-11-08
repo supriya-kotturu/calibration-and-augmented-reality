@@ -1,6 +1,14 @@
 # Calibration and Augmented Reality
 
-CS5330 Project 4 by **Sai Supriya Kotturu**: calibrate a phone camera with a ChArUco board, then use the calibration to place virtual 3D objects on the board in a live video stream. C++17 + OpenCV 5.0, with the phone streamed to the laptop over Wi-Fi by IP Webcam. Assignment spec: [task.md](task.md).
+Point a phone at a board on a tablet, and a wireframe house appears floating above it, staying put as you walk around. This repo builds that from scratch in C++17 and OpenCV 5.0. It first works out how the phone's camera bends light (focal length, image centre, lens distortion) from a handful of views of a ChArUco board. Then, every frame, it works out where the board is relative to the camera and draws 3D objects in the right place. The phone streams to the laptop over Wi-Fi with IP Webcam, so no special hardware is needed.
+
+What you'll find here:
+
+- **Three apps** sharing one core library: `calibrate` (camera calibration), `ar` (pose estimation and the virtual objects) and `features` (Harris, ORB and SIFT compared live).
+- **Demo videos and GIFs** of each, recorded on the live phone stream.
+- **A [report](report/report.md)** with the calibration numbers, design decisions and two extensions, plus an [architecture write-up](ARCHITECTURE.md).
+
+Built for Northeastern CS5330 (Project 4, spec in [task.md](task.md)).
 
 ## Summary
 
