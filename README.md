@@ -6,7 +6,7 @@ What you'll find here:
 
 - **Three apps** sharing one core library: `calibrate` (camera calibration), `ar` (pose estimation and the virtual objects) and `features` (Harris, ORB and SIFT compared live).
 - **Demo videos and GIFs** of each, recorded on the live phone stream.
-- **A report** ([REPORT.md](REPORT.md) · [PDF](REPORT.pdf)) with the calibration numbers, design decisions and two extensions, plus an [architecture write-up](ARCHITECTURE.md).
+- **A [report (PDF)](REPORT.pdf)** with the calibration numbers, design decisions and two extensions, plus an [architecture write-up](ARCHITECTURE.md).
 
 Built by **Supriya Kotturu** for Northeastern CS5330 (Project 4, spec in [task.md](task.md)).
 
@@ -14,11 +14,11 @@ Built by **Supriya Kotturu** for Northeastern CS5330 (Project 4, spec in [task.m
 
 | Item | Link |
 | --- | --- |
-| Report | [REPORT.md](REPORT.md) · [REPORT.pdf](REPORT.pdf) |
+| Report | [REPORT.pdf](REPORT.pdf) |
 | Demo videos | [Calibration](data/videos/calibration-live-stream.mp4) · [AR house](data/videos/ar-live-stream.mp4) · [AR object switching](data/videos/ar-object-switching-live-stream.mp4) (Git LFS) |
 | Calibration result | 960×544 stream, fx = fy = 690.3 px, RMS **0.38 px** over 7 views ([data/calib/phone.yml](data/calib/phone.yml)) |
 | Tests | 28 GoogleTest cases on a synthetic board, all passing (`ctest --preset test`) |
-| Extensions | AR on pre-captured video ([video](data/videos/ext-ar-on-recorded-video.mp4)); calibration comparison of two phone camera modes ([report](REPORT.md#extensions)) |
+| Extensions | AR on pre-captured video ([video](data/videos/ext-ar-on-recorded-video.mp4)); calibration comparison of two phone camera modes ([report](REPORT.pdf)) |
 | Time travel days used | 0 |
 
 ## Demos
@@ -63,7 +63,7 @@ Four executables share one static library, `calibar_core`: `make_board` renders 
 | `docs/images/` | Report and README images per task, plus GIF previews (Git LFS) |
 | `docs/mentorship/` | Decision log, difficulties, hints, scoreboard |
 | `docs/plan/`, `docs/architecture/` | Parallel build plan; architecture diagram source and PNG |
-| `REPORT.md`, `REPORT.pdf` | Project report (Markdown and the submitted PDF) |
+| `REPORT.pdf` | Project report |
 
 ## Build and run
 
@@ -159,5 +159,5 @@ All apps take `<source> [--intrinsics path] [--headless] [--max-frames N]`. `<so
 ## Acknowledgements
 
 - OpenCV 5.0 documentation and the ArUco/ChArUco calibration tutorials.
-- **Claude (Anthropic)** wrote: the parallel build plan; the CMake setup and test scaffolding; the GoogleTest suite; `video_source` and `app_args`; `draw.cpp` (D-06 amendment); the `calibrate`, `ar` and `features` apps; the architecture docs and diagrams; this README; and drafted the factual sections of the report. Full breakdown: [AI usage](REPORT.md#ai-usage).
+- **Claude (Anthropic)** wrote: the parallel build plan; the CMake setup and test scaffolding; the GoogleTest suite; `video_source` and `app_args`; `draw.cpp` (D-06 amendment); the `calibrate`, `ar` and `features` apps; the architecture docs and diagrams; this README; and drafted the factual sections of the report. Full breakdown: AI usage section of the [report](REPORT.pdf).
 - **I wrote**: all architecture decisions (D-01 to D-08); the board spec and `make_board`; the camera loop; and the core OpenCV code in `src/core/charuco.cpp`, `src/core/intrinsics_io.cpp` and `src/core/pose.cpp`. Claude reviewed that code and rewrote its comments.
