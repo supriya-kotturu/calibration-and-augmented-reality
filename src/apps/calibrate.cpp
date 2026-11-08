@@ -7,6 +7,7 @@
            Headless: no windows; auto-saves every kAutoSaveEvery-th successful detection (up to
            kAutoSaveMax), calibrates at the end if >= 5, writes intrinsics only with --intrinsics.
 */
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <opencv2/core.hpp>
@@ -104,8 +105,15 @@ int main(int argc, char** argv) {
 
     std::cout << "keys: s save last good detection | c calibrate (>=5 saves) | w write intrinsics"
                  " | q/ESC quit\n";
-    cv::namedWindow("calibrate", cv::WINDOW_NORMAL);
-    cv::resizeWindow("calibrate", 540, 960);
+    // Size the window from the stream's own aspect ratio (long side <= 960 px) so portrait and
+    // landscape sources both display unstretched; a fixed size squashed one or the other.
+    const double srcW = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    const double srcH = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    const double fit = srcW > 0 && srcH > 0 ? std::min(1.0, 960.0 / std::max(srcW, srcH)) : 1.0;
+    cv::namedWindow("calibrate", cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO);
+    if (srcW > 0 && srcH > 0) {
+        cv::resizeWindow("calibrate", static_cast<int>(srcW * fit), static_cast<int>(srcH * fit));
+    }
 
     const std::string outPath =
         args.intrinsicsPath.empty() ? calibar::calib::kDefaultIntrinsics : args.intrinsicsPath;
