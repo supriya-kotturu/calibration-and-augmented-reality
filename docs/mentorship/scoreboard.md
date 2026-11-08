@@ -2,7 +2,7 @@
 
 +1 per visible improvement, −1 per repeated hint (see hints.md). Progress update every 6 h of active work.
 
-**Total: 4**
+**Total: 5**
 
 | Date | Δ | Reason |
 | --- | --- | --- |
@@ -12,3 +12,4 @@
 | 2026-11-07 | −1 | H-05 repeated: treated ChArUco id 0 as a square; ids name inner corners (objectPointsFor step) |
 | 2026-11-07 | +1 | detectCharuco + objectPointsFor: all 9 tests green; H-06 (vector outputs) applied unprompted |
 | 2026-11-07 | +1 | intrinsics_io: all 5 tests green; missing key told apart from a zero value via FileNode::empty(); cv::Exception on open mapped to the header's runtime_error |
+| 2026-11-07 | +1 | estimatePose: all 28 core tests green; switched solvePnP inputs from marker corners to ChArUco corners after one question |
