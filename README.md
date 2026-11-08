@@ -8,7 +8,7 @@ What you'll find here:
 - **Demo videos and GIFs** of each, recorded on the live phone stream.
 - **A [report](report/report.md)** with the calibration numbers, design decisions and two extensions, plus an [architecture write-up](ARCHITECTURE.md).
 
-Built for Northeastern CS5330 (Project 4, spec in [task.md](task.md)).
+Built by **Supriya Kotturu** for Northeastern CS5330 (Project 4, spec in [task.md](task.md)).
 
 ## Summary
 
@@ -91,5 +91,5 @@ All apps take `<source> [--intrinsics path] [--headless] [--max-frames N]`, wher
 ## Acknowledgements
 
 - OpenCV 5.0 documentation and the ArUco/ChArUco calibration tutorials.
-- **Claude (Anthropic)** wrote: the parallel build plan; the CMake setup and test scaffolding; the GoogleTest suite; `video_source` and `app_args`; `draw.cpp` (D-06 amendment); the `calibrate`, `ar` and `features` apps; the architecture docs and diagrams; this README; and the drafted results sections of the report (marked there).
+- **Claude (Anthropic)** wrote: the parallel build plan; the CMake setup and test scaffolding; the GoogleTest suite; `video_source` and `app_args`; `draw.cpp` (D-06 amendment); the `calibrate`, `ar` and `features` apps; the architecture docs and diagrams; this README; and drafted the factual sections of the report. Full breakdown: [AI usage](report/report.md#ai-usage).
 - **I wrote**: all architecture decisions (D-01 to D-08); the board spec and `make_board`; the camera loop; and the core OpenCV code in `src/core/charuco.cpp`, `src/core/intrinsics_io.cpp` and `src/core/pose.cpp`. Claude reviewed that code and rewrote its comments.
