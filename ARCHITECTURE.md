@@ -8,6 +8,7 @@ Deeper companion to the overview in [README.md](README.md#architecture) ([source
 Why a state machine: the user presses `s` when the board may not be visible, so the app keeps the **last successful** detection and saves that, not the current frame.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#f7f7f7", "primaryTextColor": "#1b2a3a", "primaryBorderColor": "#b0b0b0", "lineColor": "#5a6472", "textColor": "#1b2a3a", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#b0b0b0", "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"}}}%%
 flowchart TD
   SRC["openSource(src)<br/>camera / file / URL"] --> LOOP["frame loop"]
   LOOP --> DET["detectCharuco(frame)"]
@@ -28,9 +29,15 @@ flowchart TD
   classDef core fill:#d8f3dc,stroke:#74b98a,color:#1b2a3a
   classDef cv fill:#e6d9f7,stroke:#9b82c9,color:#1b2a3a
   classDef state fill:#fff3bf,stroke:#d4b84a,color:#1b2a3a
+  classDef app fill:#cfe8ff,stroke:#6a9fd1,color:#1b2a3a
+  classDef key fill:#ffe5cc,stroke:#e0a060,color:#1b2a3a
+  classDef stop fill:#ffd8d8,stroke:#d08a8a,color:#1b2a3a
   class SRC,DET,WRITE core
   class CAL cv
   class LAST,SAVE state
+  class LOOP,DRAW,SHOW app
+  class KEY key
+  class END stop
 ```
 
 ChArUco is not a checkerboard: each frame sees a different subset of corners, so `point_list[i]` is built from that frame's `ids`, never one fixed vector. `point_list[i].size() == corner_list[i].size()` holds per frame.
@@ -38,6 +45,7 @@ ChArUco is not a checkerboard: each frame sees a different subset of corners, so
 ## 2. ar: per-frame pipeline (Tasks 4-6)
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#f7f7f7", "primaryTextColor": "#1b2a3a", "primaryBorderColor": "#b0b0b0", "lineColor": "#5a6472", "textColor": "#1b2a3a", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#b0b0b0", "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"}}}%%
 flowchart LR
   F["frame"] --> D["detectCharuco"]
   I[("intrinsics YAML<br/>or fixture.yml")] --> L["loadIntrinsics<br/>reject imageSize mismatch"]
@@ -56,7 +64,9 @@ flowchart LR
   classDef data fill:#fff3bf,stroke:#d4b84a,color:#1b2a3a
   class D,L,P,A,S core
   class PR,O,OUT app
+  classDef input fill:#ffd8d8,stroke:#d08a8a,color:#1b2a3a
   class I data
+  class F input
 ```
 
 `estimatePose` returns `nullopt` when too few corners are visible, so the loop must show the raw frame in that case rather than a stale pose.
@@ -64,6 +74,7 @@ flowchart LR
 ## 3. core library: module dependencies
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#f7f7f7", "primaryTextColor": "#1b2a3a", "primaryBorderColor": "#b0b0b0", "lineColor": "#5a6472", "textColor": "#1b2a3a", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#b0b0b0", "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"}}}%%
 flowchart BT
   BS["board_spec.h<br/>constants only"]
   CH["charuco"] --> BS
@@ -77,7 +88,9 @@ flowchart BT
   MB["make_board.exe"] --> BS
   classDef core fill:#d8f3dc,stroke:#74b98a,color:#1b2a3a
   classDef app fill:#cfe8ff,stroke:#6a9fd1,color:#1b2a3a
-  class CH,IO,PS,DR,VS,AA,BS core
+  classDef spec fill:#fff3bf,stroke:#d4b84a,color:#1b2a3a
+  class CH,IO,PS,DR,VS,AA core
+  class BS spec
   class MB app
 ```
 
@@ -88,6 +101,7 @@ flowchart BT
 Origin at the board's top-left inner ChArUco corner. +x right, +y up, +z toward the viewer. The next row of corners starts at `(0, -1, 0)`. "Floating above the board" means +z. OpenCV's own ChArUco corner coordinates use a different frame (y down), so `objectPointsFor` is the only allowed source of 3D board points.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#ffffff", "primaryColor": "#f7f7f7", "primaryTextColor": "#1b2a3a", "primaryBorderColor": "#b0b0b0", "lineColor": "#5a6472", "textColor": "#1b2a3a", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#b0b0b0", "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"}}}%%
 flowchart LR
   subgraph B["Board plane (z = 0), seen from the viewer"]
     O["origin (0,0,0)<br/>top-left inner corner"]
@@ -98,6 +112,17 @@ flowchart LR
   O -- "+x" --> X
   O -- "-y (down the board)" --> Y
   O -- "+z (out of the board)" --> Z
+  classDef origin fill:#f7f7f7,stroke:#5a6472,color:#1b2a3a
+  classDef xaxis fill:#ffd8d8,stroke:#d9534f,color:#1b2a3a
+  classDef yaxis fill:#d8f3dc,stroke:#4caf50,color:#1b2a3a
+  classDef zaxis fill:#cfe8ff,stroke:#3b82c4,color:#1b2a3a
+  class O origin
+  class X xaxis
+  class Y yaxis
+  class Z zaxis
+  linkStyle 0 stroke:#d9534f,stroke-width:2px
+  linkStyle 1 stroke:#4caf50,stroke-width:2px
+  linkStyle 2 stroke:#3b82c4,stroke-width:2px
 ```
 
 Sketch of the axes (`drawAxes`: X red, Y green, Z blue):
